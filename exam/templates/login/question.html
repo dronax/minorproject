@@ -1,0 +1,53 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>
+            Question {% block title %}{% endblock title %}
+        </title>
+        <link rel = "stylesheet" type = "text/css" href = "{% static "question.css"%}" > 
+    </head>
+
+    <body>
+        <form method = 'POST' action = 'nextquestion'>
+        {% csrf_token %}
+        {% for questions in questions %}
+        <div id = "set">
+        
+            <div id = "question">
+                
+                
+                <h3> {{questions.question}} </h3>
+            
+            <div id ="answer">
+                <label for ='option-1'> {{questions.op1}} </label>
+                <input type = "radio" name = "{{questions.question}}" value = 1>
+
+                <label for ='option-2'> {{questions.op2}} </label>
+                <input type = "radio" name = "{{questions.question}}" value = 2>
+                
+                <label for ='option-3'> {{questions.op3}} </label>
+                <input type = "radio" name = "{{questions.question}}" value = 3>
+                
+                <label for ='option-4'> {{questions.op4}} </label>
+                <input type = "radio" name = "{{questions.question}}" value = 4>
+            </div>
+        </div>
+    </div> 
+    <br>
+    <div id = 'box'>
+    Probability={{probability}}
+    </div>
+    <br>
+    {% endfor%}
+    
+    <button type = 'submit' name = 'loop_var' value = 1 > Next </button>
+    
+</form>
+
+    
+    
+    <div style="text-align:right;"><img src ='data:image/png;base64,{{data}}'alt=""height="250",width="250"a></div>
+    
+
+</html>

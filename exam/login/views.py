@@ -10,12 +10,16 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes,force_str
 from .models import *
-
-from login.models import QuesModel
+from login.models import basephyQuesModel 
 from . tokens import generate_token
 import re,random
+import numpy as np
+from girth import ability_map
+import io
+import math as m
 regex = r'[a-z]+\.\d{3}bct\d{3}@acem\.edu\.np'
-
+attended =[]
+questions=basephyQuesModel.objects.all()
 
 
 # Create your views here.
@@ -74,27 +78,28 @@ def signup(request):
         message ="Hello"+ myuser.first_name+"!!\n"+"Welcome To Assesment Evaluation System Website\n We have sent you a confirmation email,please confirm your Email adddress in order to activate your Account.\n\n Thanking You"
         from_email = settings.EMAIL_HOST_USER
         to_list = [myuser.email]
+        send_mail(subject, message, from_email, to_list, fail_silently=True )
 
         #Email  Address Confirmation Email
         current_site=get_current_site(request)
         email_subject = "Confirm  your email @ Assesment Evaluation System Login!!"
-        message_2 = render_to_string('email_confirmation.html',{
+        message2 = render_to_string('email_confirmation.html',{
             'name':myuser.first_name,
             'domain': current_site.domain,
             'uid' : urlsafe_base64_encode(force_bytes(myuser.pk)),
-            'token':generate_token.make_token(myuser),
-            'code' :random.randint(100000,999999)
+            'token':generate_token.make_token(myuser)
+            
         })
         email =EmailMessage(
             email_subject,
-            message_2,
+            message2,
             settings.EMAIL_HOST_USER,
             [myuser.email]
         )
         email.fail_silently=True
         email.send()
 
-        send_mail(subject, message,from_email,to_list,fail_silently=True )
+        
         
 
         return redirect('signin')
@@ -111,7 +116,7 @@ def signin(request):
         if user is not None:
             login(request,user)
             fname= user.first_name
-            return render (request,"login/loginhome.html",{'fname':fname})
+            return render (request,"login/index.html",{'fname':fname})
 
 
         else:
@@ -134,9 +139,10 @@ def activate(request,uidb64,token):
         myuser.is_active =True
         myuser.save()
         login(request,myuser)
-        return redirect('home')
+        messages.success(request, "Your Account has been activated!!")
+        return redirect('signin')
     else:
-        return render (request,'activation-failed.html')
+        return render(request,'activation-failed.html')
 
 
 def signinas(request):
@@ -144,11 +150,11 @@ def signinas(request):
 
 def about(request):
     return render(request,'login/about.html')
-
-def takeexam(request):
-    if request.method=='POST':
+#def takeexam(request):
+    #This is at very first for base questions.
+    if request.method == 'POST':
         print(request.POST)
-        questions=QuesModel.objects.all()
+        questions=basephyQuesModel.objects.all()
         score=0
         wrong=0
         correct=0
@@ -158,26 +164,215 @@ def takeexam(request):
             print(request.POST.get(q.question))
             print(q.ans)
             print()
-            if q.ans==request.POST.get(q.question):
-                score+=10
+            if q.ans ==  request.POST.get(q.question):
+                score+=1
                 correct+=1
             else:
                 wrong+=1
-        context={
-            'score':score,
-            'time':request.post.get('timer'),
-            'correct':correct,
-            'wrong':'wrong',
-            'total':'total'
-        }
-        return render(request,'login/takeexam.html',context)
+        if correct<2:
+            request.method=''
+            #This will take to easy question model after the very first submission.
+            if request.method == 'POST':
+                print(request.POST)
+                questions =easyphyQuesModel.objects.all()
+                score -= 1 
+                wrong=0
+                correct=0
+                total=0
+                for q in questions:
+                    total+=1
+                    print(request.POST.get(q.question))
+                    print(q.ans)
+                    print()
+                    if q.ans ==  request.POST.get(q.question):
+                        score+=1
+                        correct+=1
+                    else:
+                        wrong+=1
+                context ={
+                    'score':score,
+
+                    }
+                return render(request,'login/result.html',context)
+            else:
+                #This is easy question models at first.
+                questions= easyphyQuesModel.objects.all()
+                context = {
+                    'questions':questions
+                        }
+                return render(request,'login/takeexam.html',context)
+        
+        elif correct==2:
+            request.method=''
+            #This is medium after base questions.
+            if request.method == 'POST':
+                print(request.POST)
+                questions=mediumphyQuesModel.objects.all()
+                 
+                wrong=0
+                correct=0
+                total=0
+                for q in questions:
+                    total+=1
+                    print(request.POST.get(q.question))
+                    print(q.ans)
+                    print()
+                    if q.ans ==  request.POST.get(q.question):
+                        score+=1
+                        correct+=1
+                    else:
+                        wrong+=1
+                context ={
+                        'score':score,
+
+                        }
+                return render(request,'login/result.html',context)        
+            else:
+                #This will take to medium after base questions.
+                questions=mediumphyQuesModel.objects.all()
+                context = {
+                    'questions':questions
+                        }
+                return render(request,'login/takeexam.html',context)
+        else:
+            request.method=''
+            #This is for hard questions.
+            if request.method == 'POST':
+                print(request.POST)
+                questions=hardphyQuesModel.objects.all()
+                score += 2 
+                wrong=0
+                correct=0
+                total=0
+                for q in questions:
+                    total+=1
+                    print(request.POST.get(q.question))
+                    print(q.ans)
+                    print()
+                    if q.ans ==  request.POST.get(q.question):
+                        score+=1
+                        correct+=1
+                    else:
+                        wrong+=1
+                context ={
+                    'score':score,
+
+                    }
+                return render(request,'login/result.html',context)       
+            else:
+                #This will take to hard after base questions.
+                questions=hardphyQuesModel.objects.all()
+                context = {
+                    'questions':questions
+                        }
+                return render(request,'login/takeexam.html',context)
+        
     else:
-        questions=QuesModel.objects.all()
-        context={
+        #This is at very first for base questions.
+        questions=basephyQuesModel.objects.all()
+        context = {
             'questions':questions
         }
-        return render(request,'login/takeexam.html',context)
+        return render(request,'login/takeexam.html',context)##
+        
+questions_asked = []
+responses = []
+diss = []
+diff =[]
+cid = '1'
 
-def ability(request):
-    ()
 
+def basequestion(request):
+    
+    
+    if request.method == 'POST':
+        
+        
+        loop_var = int(request.POST.get('loop_var'))
+        if loop_var == 0:
+            questions = basephyQuesModel.objects.all()
+        elif loop_var == 1:
+            questions = phyQuesModel.objects.filter(id = cid)
+            print(f'Your question: {questions}')
+        
+        
+        
+        
+        for q in questions:
+            question = request.POST.get(q.question)
+            print(f'QuestionChecked{question}')
+            answer = q.ans
+            
+            
+            if answer == question:
+                new_response = [1]
+                diss.append(q.dis)
+                diff.append(q.dif)
+                responses.append(new_response)
+                print("CorrectAnswer")
+            else:
+                new_response = [0]
+                diss.append(q.dis)
+                diff.append(q.dif)
+                responses.append(new_response)
+                print("WrongAnswer")
+        response = np.array(responses).astype('int')
+        print(f'response: {responses}')
+        dis = np.array(diss)
+        dif = np.array(diff)
+        print(response)
+        ability = ability_map(response,dif,dis)
+        
+        questionawa,prob = new_question(ability)
+        
+        
+        context = {
+            'questions':questionawa,
+            'probability':prob
+        }
+        print(context)
+        
+        
+        return render(request,'login/question.html',context)
+
+    else:
+        questions = basephyQuesModel.objects.all()
+        context = {
+            'questions':questions
+        }
+        print('basequestion')
+        print(context)
+        questions_asked = []
+        return render(request,'login/basequestion.html',context)        
+def prob(abi,dis,dif):
+    print(type(dis))
+    print(dis)
+    p = 1/(1+m.exp(-dis * (abi - dif)))
+    
+    return p
+
+def new_question(ability):
+    Pr=0
+    Prob = []
+    questions=phyQuesModel.objects.all()
+    i=1
+    Prob.append(0)
+    qiqdd = '1'
+    for q in questions:
+        if q.id not  in  questions_asked:
+            dis = float(q.dis)
+            dif = float(q.dif)
+            print(f'ab{ability}')
+            Prob.append(prob(ability,dis,dif))
+            if (Prob[i])>(Prob[i-1]):
+                Pr = Prob[i]
+                qiqdd = q.id
+
+                print(qiqdd)
+            i+=1
+        question_to_ask = phyQuesModel.objects.filter(id=qiqdd)
+        questions_asked.append(qiqdd)
+        cid = qiqdd
+        print(f'question_to_ask: {question_to_ask}')
+
+    return (question_to_ask,Pr)

@@ -12,3 +12,8 @@ class addQuestionform(ModelForm):
     class Meta:
         model=QuesModel
         fields="__all__"
+
+class addQuestionform(ModelForm):
+    class Meta:
+        model=baseQuesModel
+        fields="__all__"
