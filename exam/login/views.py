@@ -292,7 +292,7 @@ def basequestion(request):
         if loop_var == 0:
             questions = basephyQuesModel.objects.all()
         elif loop_var == 1:
-            questions = phyQuesModel.objects.filter(id = cid)
+            questions = phyQuesModel.objects.filter(qid = cid)
             print(f'Your question: {questions}')
         
         
@@ -359,20 +359,26 @@ def new_question(ability):
     Prob.append(0)
     qiqdd = '1'
     for q in questions:
-        if q.id not  in  questions_asked:
+        if q.qid not  in  questions_asked:
             dis = float(q.dis)
             dif = float(q.dif)
             print(f'ab{ability}')
             Prob.append(prob(ability,dis,dif))
             if (Prob[i])>(Prob[i-1]):
                 Pr = Prob[i]
-                qiqdd = q.id
+                qiqdd = q.qid
 
                 print(qiqdd)
             i+=1
-        question_to_ask = phyQuesModel.objects.filter(id=qiqdd)
+        question_to_ask = phyQuesModel.objects.filter(qid=qiqdd)
         questions_asked.append(qiqdd)
         cid = qiqdd
         print(f'question_to_ask: {question_to_ask}')
 
     return (question_to_ask,Pr)
+
+def takeexam(request):
+    if request.method=="POST":
+        return render(request,'login/takeexam.html')
+
+    

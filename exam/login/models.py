@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class basephyQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -16,7 +16,7 @@ class basephyQuesModel(models.Model):
 
 class  basemathQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -29,7 +29,7 @@ class  basemathQuesModel(models.Model):
 
 class basechemQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -42,7 +42,7 @@ class basechemQuesModel(models.Model):
 
 class baseengQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -55,7 +55,7 @@ class baseengQuesModel(models.Model):
 
 class phyQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -68,7 +68,7 @@ class phyQuesModel(models.Model):
 
 class mathQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -81,7 +81,7 @@ class mathQuesModel(models.Model):
 
 class chemQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
@@ -94,7 +94,7 @@ class chemQuesModel(models.Model):
 
 class engQuesModel(models.Model):
     question = models.CharField(max_length=400,null=True)
-    questionid=models.CharField(max_length=50,null=True)
+    qid=models.CharField(max_length=50,null=True)
     op1 = models.CharField(max_length=400,null=True)
     op2 = models.CharField(max_length=400,null=True)
     op3 = models.CharField(max_length=400,null=True)
